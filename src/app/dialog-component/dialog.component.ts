@@ -8,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Observable, ReplaySubject, fromEvent, zip } from 'rxjs';
 import { DialogConfigInterface } from '../models/dialog-config.interface';
-import { DialogService } from '../service/disalog.service';
+import { DialogService } from './dialog.service';
 
 @Component({
   selector: 'suint-dialog',

@@ -1,0 +1,135 @@
+  .toast-container {
+    width: 400px;
+    padding: 20px 20px 20px 20px;
+    position: fixed;
+    top: 70px;
+    right: -2px;
+    border-radius: 4px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // pointer-events: none;
+    animation: slide-in-right 0.5s ease-out forwards;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--border-color);
+      animation: loading-bar var(--duration) linear forwards;
+    }
+
+    &.success {
+      --border-color: #2E7D32;
+      background-color: #E6F8E0;  // Verde claro más suave
+      color: #1B5E20;  // Verde más oscuro para mejor contraste
+      border-left: 4px solid var(--border-color);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    &.error {
+      --border-color: #C62828;
+      background-color: #FDECEA;
+      color: #B71C1C;
+      border-left: 4px solid var(--border-color);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    &.info {
+      --border-color: #1565C0;
+      background-color: #E3F2FD;  // Azul muy claro y sutil
+      color: #0D47A1;  // Azul fuerte para contraste
+      border-left: 4px solid var(--border-color);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    &.update {
+      --border-color: #FFA000;
+      background-color: #FFF8E1;  // Amarillo pastel para menos saturación
+      color: #FF6F00;  // Naranja fuerte para resaltar
+      border-left: 4px solid var(--border-color);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    &.delete {
+      --border-color: #C62828;
+      background-color: #FEECEC;  // Rojo claro, menos agresivo
+      color: #D32F2F;  // Rojo oscuro para mejor visibilidad
+      border-left: 4px solid var(--border-color);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .toast-content {
+      display: flex;
+      gap: 4px;
+      flex-direction: column;
+      pointer-events: none; // Desactiva eventos en el contenido
+    }
+
+    .toast-title {
+      font-size: 16px;
+      line-height: 1;
+      color: inherit;
+      margin: 0;
+    }
+
+    .toast-message {
+      font-size: 14px;
+      line-height: 1;
+      color: rgb(45, 44, 44);
+      margin: 0;
+    }
+    .toast-icon{
+      display: flex;
+      width: 25px;
+      color: inherit;
+    }
+
+    .toast-content {
+      flex: 1; // Ocupa el espacio disponible
+    }
+
+  .toast-close-btn {
+      cursor: pointer;
+      display: flex;
+      width: 15px;
+      color: black;
+      margin-left: auto; // Empuja el botón hacia la derecha
+  }
+
+    &.fade-out {
+      animation: slide-out-right ease-out forwards; ;
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-out-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes loading-bar {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0;
+    }
+  }
