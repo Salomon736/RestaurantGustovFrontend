@@ -1,0 +1,7 @@
+export interface DishInterface {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+}

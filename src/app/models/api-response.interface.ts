@@ -1,4 +1,4 @@
-export interface SuintApiResponseInterface<T> {
+export interface ApiResponseInterface<T> {
   data: T;
   isSuccess: boolean;
   statusCode: number;
