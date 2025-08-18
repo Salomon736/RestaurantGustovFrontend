@@ -18,7 +18,7 @@
         <button
           (click)="activeTab = 'dishes'"
           [class]="activeTab === 'dishes'
-            ? 'bg-orange-500 text-white shadow-sm'
+            ? 'bg-cyan-950 text-white shadow-sm'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           class="px-6 py-3 rounded-md transition-all duration-200 font-medium">
           🍽️ Platos
@@ -26,7 +26,7 @@
         <button
           (click)="activeTab = 'meal-periods'"
           [class]="activeTab === 'meal-periods'
-            ? 'bg-orange-500 text-white shadow-sm'
+            ? 'bg-cyan-950 text-white shadow-sm'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           class="px-6 py-3 rounded-md transition-all duration-200 font-medium">
           ⏰ Períodos de Comida
@@ -39,7 +39,7 @@
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-xl font-semibold text-gray-900">Gestión de Platos</h2>
           <button
-            class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center"
+            class="bg-cyan-900 text-white px-4 py-2 rounded-lg hover:bg-cyan-950 transition-colors flex items-center"
             (click)="openDishForm()"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -50,7 +50,7 @@
 
         </div>
         <div *ngIf="loading()" class="text-center py-12">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mb-4"></div>
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-950 mb-4"></div>
           <p class="text-gray-500">Cargando platos...</p>
         </div>
         <div *ngIf="!loading()">
@@ -74,7 +74,7 @@
                 <div class="flex justify-between items-start">
                   <div>
                     <h3 class="font-semibold text-lg text-gray-800">{{ dish.name }}</h3>
-                    <p class="text-orange-600 font-bold text-lg mt-1">Bs {{ dish.price | number:'1.2-2' }}</p>
+                    <p class="text-cyan-950 font-bold text-lg mt-1">Bs {{ dish.price | number:'1.2-2' }}</p>
                   </div>
                   <div class="flex space-x-2">
                     <button class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 transition-colors"
@@ -104,7 +104,7 @@
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-xl font-semibold text-gray-900">Gestión de Períodos de Comida</h2>
           <button
-            class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center"
+            class="bg-cyan-900 text-white px-4 py-2 rounded-lg hover:bg-cyan-950 transition-colors flex items-center"
             (click)="openMealPeriodForm()"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -115,7 +115,7 @@
         </div>
 
         <div *ngIf="loading()" class="text-center py-12">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mb-4"></div>
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-950 mb-4"></div>
           <p class="text-gray-500">Cargando períodos de comida...</p>
         </div>
 
