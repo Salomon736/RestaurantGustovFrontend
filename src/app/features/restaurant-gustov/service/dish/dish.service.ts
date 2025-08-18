@@ -36,4 +36,8 @@ export class DishService {
   getById$(dishId: number) {
     return this.http.get<ApiResponseInterface<DishInterface>>(`${this.#endPointBaseV1}/${dishId}`);
   }
+  delete$(dishId: number, destroyRef: DestroyRef) {
+    return this.http.delete<ApiResponseInterface<boolean>>(`${this.#endPointBaseV1}/${dishId}`)
+      .pipe(takeUntilDestroyed(destroyRef));
+  }
 }
