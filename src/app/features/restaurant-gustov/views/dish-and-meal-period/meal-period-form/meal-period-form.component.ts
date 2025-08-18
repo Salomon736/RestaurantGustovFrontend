@@ -1,8 +1,8 @@
-import { Component, DestroyRef, inject, signal, computed, effect } from '@angular/core';
+import { Component, DestroyRef, inject, signal, computed } from '@angular/core';
 import { DialogService } from 'src/app/dialog-component/dialog.service';
 import { ToastService } from 'src/app/toast-notification/toast.service';
-import { DishFormModel } from '../../../models/dish/dish-form.model';
-import { DishService } from '../../../service/dish/dish.service';
+import { MealPeriodFormModel } from '../../../models/meal-period/meal-period-form.model';
+import { MealPeriodService } from '../../../service/meal-period/meal-period.service';
 import { ApiResponseInterface } from 'src/app/models/api-response.interface';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -10,8 +10,8 @@ import { finalize } from 'rxjs';
 import { ComponentHelper } from 'src/app/helpers/component.helper';
 
 @Component({
-  selector: 'suint-dish-form',
-  templateUrl: './dish-form.component.html',
+  selector: 'suint-meal-period-form',
+  templateUrl: './meal-period-form.component.html',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   styles: [`
@@ -37,8 +37,8 @@ import { ComponentHelper } from 'src/app/helpers/component.helper';
     }
   `]
 })
-export class DishFormComponent {
-  #dishService = inject(DishService);
+export class MealPeriodFormComponent {
+  #mealPeriodService = inject(MealPeriodService);
   #toastService = inject(ToastService);
   #componentHelper = inject(ComponentHelper);
 
@@ -46,23 +46,20 @@ export class DishFormComponent {
   isLoading = false;
   msgLoading = '';
 
-  dishId = signal<number | null>((this.dialogService.dialogConfig?.data as any)?.dishId ?? null);
+  mealPeriodId = signal<number | null>((this.dialogService.dialogConfig?.data as any)?.mealPeriodId ?? null);
 
   formGroup!: FormGroup<{
-    name: FormControl<string | null>;
-    description: FormControl<string | null>;
-    image: FormControl<string | null>;
-    price: FormControl<number | null>;
+    nameMealPeriod: FormControl<string | null>;
+    startTime: FormControl<string | null>;
+    endTime: FormControl<string | null>;
+    color: FormControl<string | null>;
 }>;
 
   isProsesing = signal(false);
   isUploadingImage = signal(false);
-  entityOrigin = signal(new DishFormModel());
-  entityForm = signal(new DishFormModel());
-  selectedFile = signal<File | null>(null);
-  imagePreviewUrl = signal<string | null>(null);
+  entityOrigin = signal(new MealPeriodFormModel());
+  entityForm = signal(new MealPeriodFormModel());
 
-  // Valor computado para isDifferent
   isDifferent = computed(() =>
     this.#componentHelper.objectIsDifferent(this.entityOrigin(), this.entityForm())
   );
@@ -76,27 +73,14 @@ export class DishFormComponent {
   close() {
     this.dialogService.close();
   }
-  onFileSelected(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    this.selectedFile.set(file);
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      this.imagePreviewUrl.set(e.target.result);
-      this.formGroup.controls.image.setValue(e.target.result);
-    };
-    reader.readAsDataURL(file);
-  }
-}
   async save(event: Event) {
     event.preventDefault();
     const updatedEntityForm = {
       ...this.entityForm(),
-      name: this.formGroup.controls.name.value,
-      description: this.formGroup.controls.description.value,
-      image: this.formGroup.controls.image.value,
-      price: this.formGroup.controls.price.value
+      name: this.formGroup.controls.nameMealPeriod.value,
+      description: this.formGroup.controls.startTime.value,
+      image: this.formGroup.controls.endTime.value,
+      price: this.formGroup.controls.color.value
     };
 
     this.entityForm.set(updatedEntityForm);
@@ -105,19 +89,15 @@ export class DishFormComponent {
     this.msgLoading = 'Guardando';
     this.isProsesing.set(true);
 
-    const isNewDish = this.dishId === null;
-    console.log('ID DE PLATO: ',this.dishId())
-    console.log('OBJETO PARA CREAR PLATO: ',this.entityForm())
-    this.#dishService.save$(this.entityForm(), this.dishId())
+    const isNewDish = this.mealPeriodId === null;
+    this.#mealPeriodService.save$(this.entityForm(), this.mealPeriodId())
     .pipe(finalize(() => { this.isProsesing.set(false); }))
     .subscribe({
       next: (response: ApiResponseInterface<boolean>) => {
-        console.log('Respuesta al crear plato: ', response);
         if (response.isSuccess) {
-
           this.dialogService.close(1);
           const action = isNewDish ? 'creado' : 'actualizado';
-          const successMessage = `El plato ha sido ${action} correctamente. ${response.message || ''}`;
+          const successMessage = `El periodo de comida ha sido ${action} correctamente. ${response.message || ''}`;
           this.#toastService.open('Éxito', successMessage.trim(), { type: 'success' });
         } else {
           console.log(response.errors);
@@ -136,29 +116,28 @@ export class DishFormComponent {
   //#region Private Methods
   #initializeComponent() {
     this.formGroup = new FormGroup({
-      name: new FormControl<string | null>(null, [Validators.required]),
-      description: new FormControl<string | null>(null, [Validators.required]),
-      image: new FormControl<string | null>(null),
-      price: new FormControl<number | null>(null, [Validators.required])
+      nameMealPeriod: new FormControl<string | null>(null, [Validators.required]),
+      startTime: new FormControl<string | null>(null, [Validators.required]),
+      endTime: new FormControl<string | null>(null),
+      color: new FormControl<string | null>(null, [Validators.required])
     });
   }
 
   #loadData() {
-    console.log('ID DE DISH: ',this.dishId());
-    if (this.dishId() && this.dishId()! > 0) {
+    if (this.mealPeriodId() && this.mealPeriodId()! > 0) {
       this.msgLoading = 'Cargando datos';
       this.isProsesing.set(true);
 
-      this.#dishService.getById$(this.dishId()!)
+      this.#mealPeriodService.getById$(this.mealPeriodId()!)
       .pipe(finalize(() => this.isProsesing.set(false)))
       .subscribe({
-        next: (value: ApiResponseInterface<DishFormModel>) => {
+        next: (value: ApiResponseInterface<MealPeriodFormModel>) => {
           console.log('Respuesta getById:', value);
           this.formGroup.setValue({
-            name: value.data.name,
-            description: value.data.description,
-            image: value.data.image,
-            price: value.data.price
+            nameMealPeriod: value.data.nameMealPeriod,
+            startTime: value.data.startTime,
+            endTime: value.data.endTime,
+            color: value.data.color
           });
           this.#setEntityFormValues();
 
@@ -181,10 +160,10 @@ export class DishFormComponent {
   #setEntityFormValues() {
     const updatedEntityForm = {
       ...this.entityForm(),
-      name: this.formGroup.controls.name.value as string,
-      description: this.formGroup.controls.description.value as string,
-      image: this.formGroup.controls.image.value as string,
-      price: this.formGroup.controls.price.value as number
+      nameMealPeriod: this.formGroup.controls.nameMealPeriod.value as string,
+      startTime: this.formGroup.controls.startTime.value as string,
+      endTime: this.formGroup.controls.endTime.value as string,
+      color: this.formGroup.controls.color.value as string
     };
 
     this.entityForm.set(updatedEntityForm);

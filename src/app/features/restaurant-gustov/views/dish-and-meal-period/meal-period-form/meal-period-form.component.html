@@ -1,0 +1,111 @@
+<div class="flex flex-col h-full max-h-[90vh] bg-white rounded-lg shadow-lg">
+  <!-- Header -->
+  <div class="flex items-center justify-between p-4 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-800">AÑADIR NUEVO PERIODO DE COMIDA</h2>
+    <button (click)="close()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="overflow-y-auto flex-1 px-6 py-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <form [formGroup]="formGroup" class="space-y-4">
+      <!-- Campo Nombre -->
+      <div class="w-full" [ngClass]="{'form-field-invalid': formGroup.controls.nameMealPeriod.errors && (formGroup.controls.nameMealPeriod.dirty || formGroup.controls.nameMealPeriod.touched)}">
+        <label for="nameMealPeriod" class="block text-sm font-medium text-gray-700 mb-2">* Nombre</label>
+        <input
+          id="nameMealPeriod"
+          formControlName="nameMealPeriod"
+          type="text"
+          placeholder="Desayuno"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+
+        <div *ngIf="formGroup.controls.nameMealPeriod.hasError('required') && (formGroup.controls.nameMealPeriod.dirty || formGroup.controls.nameMealPeriod.touched)" class="text-red-500 text-xs mt-1">
+          El nombre es obligatorio.
+        </div>
+      </div>
+      <!-- Campos de Hora -->
+      <div class="flex gap-4">
+        <div
+          class="w-1/2"
+          [ngClass]="{'form-field-invalid': formGroup.controls.startTime.errors && (formGroup.controls.startTime.dirty || formGroup.controls.startTime.touched)}">
+
+          <label for="startTime" class="block text-sm font-medium mb-2">* Hora de inicio</label>
+
+          <input
+            id="startTime"
+            formControlName="startTime"
+            suint-input
+            type="time"
+            placeholder="7:00"
+          />
+
+          <span *ngIf="formGroup.controls.startTime.hasError('required') && (formGroup.controls.startTime.dirty || formGroup.controls.startTime.touched)"
+                class="msg-validation-error">
+            La hora de inicio es obligatoria.
+          </span>
+        </div>
+
+        <div
+          class="w-1/2"
+          [ngClass]="{'form-field-invalid': formGroup.controls.endTime.errors && (formGroup.controls.endTime.dirty || formGroup.controls.endTime.touched)}">
+
+          <label for="endTime" class="block text-sm font-medium mb-2">* Hora de fin</label>
+
+          <input
+            id="endTime"
+            formControlName="endTime"
+            suint-input
+            type="time"
+            placeholder="9:00"
+          />
+
+          <span *ngIf="formGroup.controls.endTime.hasError('required') && (formGroup.controls.endTime.dirty || formGroup.controls.endTime.touched)"
+                class="msg-validation-error">
+            La hora de fin es obligatoria.
+          </span>
+        </div>
+      </div>
+
+      <!-- Campo Color -->
+      <div class="w-full" [ngClass]="{'form-field-invalid': formGroup.controls.color.errors && (formGroup.controls.color.dirty || formGroup.controls.color.touched)}">
+        <label for="color" class="block text-sm font-medium text-gray-700 mb-2">* Color</label>
+        <input
+          id="color"
+          formControlName="color"
+          type="text"
+          placeholder="URL"
+          type="color" tabindex="1"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+
+        <div *ngIf="formGroup.controls.color.hasError('required') && (formGroup.controls.color.dirty || formGroup.controls.color.touched)" class="text-red-500 text-xs mt-1">
+          El color es obligatorio.
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Botones -->
+  <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+    <button
+      (click)="close()"
+      class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors">
+      Cancelar
+    </button>
+
+    <button
+      (click)="save($event)"
+      [disabled]="!formGroup.valid || isProsesing() || (!isDifferent())"
+      class="px-4 py-2 text-sm font-medium text-white bg-orange-500 border border-transparent rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+      <span *ngIf="!isProsesing()">Guardar</span>
+      <span *ngIf="isProsesing()" class="flex items-center">
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Procesando...
+      </span>
+    </button>
+  </div>
+</div>
