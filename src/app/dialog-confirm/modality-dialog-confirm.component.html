@@ -1,0 +1,33 @@
+<div class="flex flex-col items-center justify-center gap-5 px-2 py-6">
+  <div class="flex items-center justify-center w-6 h-6 rounded-full">
+    <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m0-4h.01M12 9v.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"></path>
+    </svg>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <div>
+      <h1 class="text-lg leading-none text-center font-primaryMedium">Eliminar item?</h1>
+    </div>
+    <h2 class="text-sm leading-none text-center text-enable">
+      Una vez eliminado, este elemento no podrá ser recuperado.
+    </h2>
+    <h2 class="text-sm leading-none text-center font-primaryRegular">
+      Deseas continuar?
+    </h2>
+  </div>
+
+  <!-- Botones -->
+  <div class="flex justify-end gap-2 mt-2">
+    <button
+      class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+      (click)="cancel()">
+      Cancelar
+    </button>
+    <button
+      class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+      (click)="deleteModality()">
+      Eliminar
+    </button>
+  </div>
+</div>
