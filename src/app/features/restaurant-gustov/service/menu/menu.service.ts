@@ -17,6 +17,7 @@ export class MenuService {
   //#region CREATE & UPDATE
 
   save$(data: MenuFormModel, menuId: number | null = null) {
+    console.log('MENU OBJET: ',data);
     if (!menuId)
       return this.http.post<ApiResponseInterface<boolean>>(this.#endPointBaseV1, data)
     else
