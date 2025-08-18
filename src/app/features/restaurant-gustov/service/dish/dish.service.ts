@@ -11,7 +11,7 @@ import { DishFormModel } from '../../models/dish/dish-form.model';
   providedIn: 'root'
 })
 export class DishService {
-  #httpClient = inject(HttpClient);
+  private readonly http = inject(HttpClient);
   #destroyRef = inject(DestroyRef);
   //Organization endPoint of dish API V1
   #endPointBaseV1 = `${environment.apiRestaurant}/dish`;
@@ -20,9 +20,9 @@ export class DishService {
 
   save$(data: DishFormModel, dishId: number | null = null) {
     if (!dishId)
-      return this.#httpClient.post<ApiResponseInterface<boolean>>(this.#endPointBaseV1, data)
+      return this.http.post<ApiResponseInterface<boolean>>(this.#endPointBaseV1, data)
     else
-      return this.#httpClient.put<ApiResponseInterface<boolean>>(`${this.#endPointBaseV1}/${dishId}`, data)
+      return this.http.put<ApiResponseInterface<boolean>>(`${this.#endPointBaseV1}/${dishId}`, data)
   }
 
   //#endregion CREATE & UPDATE
@@ -30,10 +30,10 @@ export class DishService {
   //#region READ
 
   searchByFilter$() {
-    return this.#httpClient.get<ApiResponseInterface<Array<DishInterface>>>(this.#endPointBaseV1);
+    return this.http.get<ApiResponseInterface<Array<DishInterface>>>(this.#endPointBaseV1);
   }
 
   getById$(dishId: number) {
-    return this.#httpClient.get<ApiResponseInterface<DishInterface>>(`${this.#endPointBaseV1}/${dishId}`);
+    return this.http.get<ApiResponseInterface<DishInterface>>(`${this.#endPointBaseV1}/${dishId}`);
   }
 }
