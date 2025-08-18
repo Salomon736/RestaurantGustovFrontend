@@ -72,7 +72,7 @@ export class MenuManagementComponent {
     this.selectedMealPeriod.set(mealPeriodId);
   }
 
-  addDishToMenu(dishId: number) {
+  addDishToMenu(dishId: number, quantity: number = 1) {
     if (!this.selectedMealPeriod()) {
       this.#toastService.open("Error", "Selecciona un período de comida primero", {
         type: "error"
@@ -82,6 +82,7 @@ export class MenuManagementComponent {
 
     const menuData = new MenuFormModel(
       this.selectedDate(),
+      quantity,
       dishId,
       this.selectedMealPeriod()
     );
@@ -95,7 +96,7 @@ export class MenuManagementComponent {
             duration: 2000
           });
         } else {
-          this.#toastService.open("Error", response.errors?.join(", "), {
+          this.#toastService.open("Error", response.errors?.join(", ") || "Error desconocido", {
             type: "error"
           });
         }
@@ -108,6 +109,38 @@ export class MenuManagementComponent {
       }
     });
   }
+  updateMenuQuantity(menuId: number, newQuantity: number) {
+    newQuantity = Math.max(1, Math.min(100, newQuantity));
+
+    const menu = this.menus().find(m => m.id === menuId);
+    if (!menu) return;
+
+    const menuData = new MenuFormModel(
+      menu.menuDate.toString().split('T')[0],
+      newQuantity,
+      menu.idDish,
+      menu.idMealPeriod
+    );
+    this.#menuService.save$(menuData, menuId).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          const updatedMenus = this.menus().map(m =>
+            m.id === menuId ? { ...m, quantity: newQuantity } : m
+          );
+          this.menus.set(updatedMenus);
+          this.loadInitialData();
+          this.#toastService.open("Éxito", "Cantidad actualizada", {
+            type: "success",
+            duration: 1500
+          });
+        }
+      },
+      error: (e) => {
+        console.error(e);
+        this.loadInitialData();
+      }
+    });
+}
 
   removeFromMenu(menuId: number) {
     this.#dialogService

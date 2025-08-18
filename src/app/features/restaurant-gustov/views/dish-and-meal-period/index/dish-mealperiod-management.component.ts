@@ -144,7 +144,7 @@ export class DishMealPeriodManagementComponent {
         },
         error: (e) => {
           console.error("Error al eliminar elemento", e)
-          this.#toastService.open("Error", "Ocurrió un error al eliminar el elemento", {
+          this.#toastService.open("Error", `No se puede eliminar el ${type} por que esta siendo usado en menu`, {
             type: "error",
           })
         },
