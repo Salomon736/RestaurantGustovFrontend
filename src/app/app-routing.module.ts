@@ -5,7 +5,8 @@ import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'menu-management', component: DishMealPeriodManagementComponent },
+  { path: 'dish-meal-period-management', component: DishMealPeriodManagementComponent },
+  // { path: 'menu-management', component: MenuManagementComponent },
   { path: '**', redirectTo: '' }
 ];
 
