@@ -8,6 +8,8 @@ import { filter, finalize, forkJoin, map, Observable, of, Subject, switchMap, ta
 import { DishFormComponent } from '../dish-form/dish-form.component';
 import { ApiResponseInterface } from 'src/app/models/api-response.interface';
 import { ModalityDialogConfirmComponent } from 'src/app/dialog-confirm/modality-dialog-confirm.component';
+import { MealPeriodInterface } from '../../../models/meal-period/meal-period.interface';
+import { MealPeriodService } from '../../../service/meal-period/meal-period.service';
 
 @Component({
   selector: 'app-dish-meal-period-management',
@@ -15,22 +17,28 @@ import { ModalityDialogConfirmComponent } from 'src/app/dialog-confirm/modality-
 })
 export class DishMealPeriodManagementComponent {
   #dialogService = inject(DialogService);
-  #dishService = inject(DishService);
-  #destroyRef = inject(DestroyRef);
   #toastService = inject(ToastService);
+
+  #dishService = inject(DishService);
+  #mealPeriodService = inject(MealPeriodService);
+
+  #destroyRef = inject(DestroyRef);
   private destroy$ = new Subject<void>();
   activeTab: string = 'dishes';
 
   loading = signal(true);
   dishes = signal<DishInterface[]>([]);
+  mealPeriods = signal<MealPeriodInterface[]>([]);
 
   constructor(private router: Router) {
     this.loading.set(true);
     forkJoin({
-      dishes: this.#searchDishes$()
+      dishes: this.#searchDishes$(),
+      mealPeriods: this.#searchMealPeriods$()
     }).subscribe({
-      next: ({ dishes }) => {
+      next: ({ dishes, mealPeriods }) => {
         this.dishes.set(dishes.data);
+        this.mealPeriods.set(mealPeriods.data);
         this.loading.set(false);
       },
       error: (e) => {
@@ -40,6 +48,35 @@ export class DishMealPeriodManagementComponent {
     });
   }
   openDishForm(existingDishId: number | null = null) {
+    this.#dialogService.open(DishFormComponent, {
+      size: {
+        width: '600px'
+      },
+      data: {
+        dishId: existingDishId
+      }
+    })
+    .afterClosed()
+    .pipe(
+      switchMap((response: boolean) => {
+        if (response) {
+          return this.#searchDishes$().pipe(map(res => res.data));
+        } else {
+          return of(this.dishes());
+        }
+      })
+    ).subscribe({
+      next: (value) => {
+        this.dishes.set(value);
+        this.loading.set(false);
+      },
+      error: (e) => {
+        console.log(e);
+        this.loading.set(false);
+      }
+    });
+  }
+  openMealPeriodForm(existingDishId: number | null = null) {
     this.#dialogService.open(DishFormComponent, {
       size: {
         width: '600px'
@@ -184,6 +221,9 @@ export class DishMealPeriodManagementComponent {
   }
   #searchDishes$() {
     return this.#dishService.searchByFilter$();
+  }
+  #searchMealPeriods$() {
+    return this.#mealPeriodService.searchByFilter$();
   }
   goBack() {
     this.router.navigate(['/']);
