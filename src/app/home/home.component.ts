@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
 export class HomeComponent {
   constructor(private router: Router) {}
 
+  navigateToDishAndMealPeriodManagement() {
+    this.router.navigate(['/dish-meal-period-management']);
+  }
   navigateToMenuManagement() {
     this.router.navigate(['/menu-management']);
   }
