@@ -4,12 +4,14 @@ import { DishMealPeriodManagementComponent } from './features/restaurant-gustov/
 import { HomeComponent } from './home/home.component';
 import { MenuManagementComponent } from './features/restaurant-gustov/views/menu/index/menu-index.component';
 import { SaleManagementComponent } from './features/restaurant-gustov/views/sale/index/sale-index-management.component';
+import { ReportsComponent } from './features/restaurant-gustov/views/report/index/reports-index.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'dish-meal-period-management', component: DishMealPeriodManagementComponent },
   { path: 'menu-management', component: MenuManagementComponent },
   { path: 'sale-management', component: SaleManagementComponent },
+  { path: 'report-management', component: ReportsComponent },
   { path: '**', redirectTo: '' }
 ];
 
