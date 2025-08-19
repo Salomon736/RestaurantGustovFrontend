@@ -34,6 +34,7 @@ export class SaleManagementComponent {
   sales = signal<SaleInterface[]>([]);
   menus = signal<MenuInterface[]>([]);
   filteredMenus = signal<MenuInterface[]>([]);
+  totalSales = signal<number>(0);
 
   selectedDate = signal<string>(new Date().toISOString().split('T')[0]);
   selectedMenu = signal<number | null>(null);
@@ -64,7 +65,28 @@ export class SaleManagementComponent {
 
   onDateChange(event: any) {
     this.selectedDate.set(event.target.value);
+    this.loadSalesForSelectedDate();
     this.filterMenusByDate();
+  }
+
+  loadSalesForSelectedDate() {
+    const date = new Date(this.selectedDate());
+    this.loading.set(true);
+
+    forkJoin({
+      sales: this.#saleService.getSalesByDate$(date),
+      total: this.#saleService.getTotalSalesByDate$(date)
+    }).subscribe({
+      next: ({ sales, total }) => {
+        this.sales.set(sales.data || []);
+        this.totalSales.set(total.data || 0);
+        this.loading.set(false);
+      },
+      error: (e) => {
+        console.error(e);
+        this.loading.set(false);
+      }
+    });
   }
 
   onMenuChange(menuId: number) {
@@ -120,7 +142,13 @@ export class SaleManagementComponent {
     this.#saleService.save$(saleData).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          this.loadInitialData();
+          this.loadSalesForSelectedDate();
+          this.#menuService.searchByFilter$().subscribe({
+            next: (menuResponse) => {
+              this.menus.set(menuResponse.data || []);
+              this.filterMenusByDate();
+            }
+          });
           this.#toastService.open("Éxito", "Venta registrada correctamente", {
             type: "success",
             duration: 2000
@@ -159,7 +187,7 @@ export class SaleManagementComponent {
       .subscribe({
         next: (response) => {
           if (response?.isSuccess) {
-            this.loadInitialData();
+            this.loadSalesForSelectedDate();
             this.#toastService.open("Éxito", "Venta eliminada", {
               type: "delete",
               duration: 2000
@@ -174,20 +202,15 @@ export class SaleManagementComponent {
         }
       });
   }
-
   resetForm() {
     this.selectedMenu.set(null);
     this.quantity.set(1);
   }
-
   getSalesForSelectedDate(): SaleInterface[] {
-    return this.sales().filter(sale => {
-      const saleDate = new Date(sale.createdAt).toISOString().split('T')[0];
-      return saleDate === this.selectedDate();
-    });
+    return this.sales();
   }
   getTotalSalesForDay(): number {
-    return this.getSalesForSelectedDate().reduce((total, sale) => total + sale.totalPrice, 0);
+    return this.totalSales();
   }
   getSelectedMenuPrice(): number {
     if (!this.selectedMenu()) return 0;
@@ -203,17 +226,14 @@ export class SaleManagementComponent {
     this.selectedMenu.set(menu.id);
     this.quantity.set(1);
   }
-
   getSelectedMenu(): MenuInterface | undefined {
     return this.menus().find(m => m.id === this.selectedMenu());
   }
-
   increaseQuantity(): void {
     if (this.quantity() < this.getSelectedMenuQuantity()) {
       this.quantity.update(q => q + 1);
     }
   }
-
   decreaseQuantity(): void {
     if (this.quantity() > 1) {
       this.quantity.update(q => q - 1);
