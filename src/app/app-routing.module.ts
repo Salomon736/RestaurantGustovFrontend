@@ -10,6 +10,7 @@ const routes: Routes = [
   { path: 'dish-meal-period-management', component: DishMealPeriodManagementComponent },
   { path: 'menu-management', component: MenuManagementComponent },
   { path: 'sale-management', component: SaleManagementComponent },
+  // { path: 'report-management', component: ReportManagementComponent },
   { path: '**', redirectTo: '' }
 ];
 
