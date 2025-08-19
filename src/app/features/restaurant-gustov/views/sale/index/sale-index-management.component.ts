@@ -219,7 +219,25 @@ export class SaleManagementComponent {
       this.quantity.update(q => q - 1);
     }
   }
+  groupMenusByPeriod(): any[] {
+    const periodsMap = new Map<number, any>();
 
+    this.filteredMenus().forEach(menu => {
+      if (!periodsMap.has(menu.idMealPeriod)) {
+        periodsMap.set(menu.idMealPeriod, {
+          id: menu.mealPeriod.id,
+          name: menu.mealPeriod.nameMealPeriod,
+          color: menu.mealPeriod.color,
+          startTime: menu.mealPeriod.startTime,
+          endTime: menu.mealPeriod.endTime,
+          menus: []
+        });
+      }
+      periodsMap.get(menu.idMealPeriod).menus.push(menu);
+    });
+
+    return Array.from(periodsMap.values());
+  }
   goBack() {
     this.router.navigate(['/']);
   }
