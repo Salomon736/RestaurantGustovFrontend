@@ -21,7 +21,7 @@ RxJS 7.8.2
 
 Tailwind CSS
 # Estructura del Proyecto
-
+```
 src/
 ├── app/
 │   ├── features/restaurant-gustov/
@@ -39,7 +39,7 @@ src/
 │   └── home/                  # Página principal
 ├── environments/              # Configuración de entornos
 └── assets/                   # Recursos estáticos
-
+```
 # Prerrequisitos
 Node.js 18.19.1+
 
