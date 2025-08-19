@@ -31,49 +31,69 @@
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
       <h2 class="text-lg font-semibold text-gray-800 mb-4">Nueva Venta</h2>
 
-      <!-- Tarjetas de Menús Disponibles -->
+      <!-- Tarjetas de Menús Disponibles - Agrupadas por Periodo -->
       <div class="mb-6">
         <h3 class="text-md font-medium text-gray-700 mb-3">Menús Disponibles</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div
-            *ngFor="let menu of filteredMenus()"
-            (click)="selectMenu(menu)"
-            [class]="selectedMenu() === menu.id
-              ? 'border-2 border-cyan-500 bg-cyan-50'
-              : 'border border-gray-200 hover:border-cyan-300 hover:bg-cyan-50'"
-            class="p-4 rounded-lg cursor-pointer transition-all">
-            <div class="flex items-start space-x-3">
-              <img [src]="menu.dish.image || 'assets/images/default-dish.jpg'"
-                   [alt]="menu.dish.name"
-                   class="w-16 h-16 rounded-lg object-cover">
-              <div class="flex-1">
-                <h4 class="font-medium text-gray-900">{{ menu.dish.name }}</h4>
-                <p class="text-sm text-gray-600">{{ menu.dish.description }}</p>
-                <div class="mt-2 flex justify-between items-center">
-                  <span class="text-cyan-700 font-semibold">{{ menu.dish.price | currency:'Bs ' }}</span>
-                  <span class="text-sm px-2 py-1 bg-gray-100 rounded-full">
-                    Disponible: {{ menu.quantity }}
-                  </span>
+
+        <!-- Agrupación por Periodos -->
+        <div *ngFor="let period of groupMenusByPeriod()" class="mb-6">
+          <!-- Encabezado del Periodo -->
+          <div class="flex items-center mb-3">
+            <div class="w-3 h-3 rounded-full mr-2" [style.background]="period.color"></div>
+            <h4 class="font-medium text-gray-700">{{ period.name }} ({{ period.startTime }} - {{ period.endTime }})</h4>
+          </div>
+
+          <!-- Tarjetas de Menús -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              *ngFor="let menu of period.menus"
+              (click)="selectMenu(menu)"
+              [class]="selectedMenu() === menu.id
+                ? 'border-2 border-cyan-500 bg-cyan-50'
+                : 'border border-gray-200 hover:border-cyan-300 hover:bg-cyan-50'"
+              class="p-4 rounded-lg cursor-pointer transition-all">
+              <div class="flex items-start space-x-3">
+                <img [src]="menu.dish.image || 'assets/images/default-dish.jpg'"
+                     [alt]="menu.dish.name"
+                     class="w-16 h-16 rounded-lg object-cover">
+                <div class="flex-1">
+                  <h4 class="font-medium text-gray-900">{{ menu.dish.name }}</h4>
+                  <p class="text-sm text-gray-600">{{ menu.dish.description }}</p>
+                  <div class="mt-2 flex justify-between items-center">
+                    <span class="text-cyan-700 font-semibold">{{ menu.dish.price | currency:'Bs ' }}</span>
+                    <span class="text-sm px-2 py-1 bg-gray-100 rounded-full">
+                      Disponible: {{ menu.quantity }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <div *ngIf="filteredMenus().length === 0" class="text-center py-4 text-gray-500">
           No hay menús disponibles para esta fecha
         </div>
       </div>
 
-      <!-- Detalles de la Venta -->
+      <!-- Detalles de la Venta Seleccionada -->
       <div *ngIf="selectedMenu()" class="bg-gray-50 rounded-lg p-4 mb-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Menú Seleccionado -->
+          <!-- Menú Seleccionado con Info de Periodo -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Menú seleccionado</label>
-            <div class="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200">
-              <img [src]="getSelectedMenu()?.dish?.image || 'assets/images/default-dish.jpg'"
-                   class="w-10 h-10 rounded-full object-cover">
-              <span class="font-medium">{{ getSelectedMenu()?.dish?.name }}</span>
+            <div class="p-3 bg-white rounded-lg border border-gray-200">
+              <div class="flex items-center space-x-3">
+                <img [src]="getSelectedMenu()?.dish?.image || 'assets/images/default-dish.jpg'"
+                     class="w-10 h-10 rounded-full object-cover">
+                <div>
+                  <span class="font-medium">{{ getSelectedMenu()?.dish?.name }}</span>
+                  <div class="flex items-center mt-1">
+                    <div class="w-2 h-2 rounded-full mr-1" [style.background]="getSelectedMenu()?.mealPeriod?.color"></div>
+                    <span class="text-xs text-gray-500">{{ getSelectedMenu()?.mealPeriod?.nameMealPeriod }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -154,7 +174,12 @@
                      class="w-12 h-12 rounded-lg object-cover">
                 <div>
                   <h3 class="font-medium">{{ sale.menu.dish.name }}</h3>
-                  <p class="text-sm text-gray-500">{{ sale.createdAt | date:'MMM d, HH:mm' }}</p>
+                  <div class="flex items-center mt-1">
+                    <div class="w-2 h-2 rounded-full mr-1" [style.background]="sale.menu.mealPeriod.color"></div>
+                    <span class="text-xs text-gray-500">
+                      {{ sale.menu.mealPeriod.nameMealPeriod }} • {{ sale.createdAt | date:'HH:mm' }}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div class="text-right">
