@@ -1,0 +1,115 @@
+<div class="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+  <h3 class="text-lg font-semibold text-gray-800">Filtros del Reporte</h3>
+
+  <!-- Selector de Tipo de Reporte -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Reporte</label>
+    <select
+      [value]="filters().reportType"
+      (change)="onReportTypeChange($event)"
+      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      <option *ngFor="let type of reportTypes" [value]="type.value">
+        {{ type.label }}
+      </option>
+    </select>
+    <p class="text-xs text-gray-500 mt-1">
+      {{ getSelectedReportType().description }}
+    </p>
+  </div>
+
+  <!-- Selector de Tipo de Fecha -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Rango de Fechas</label>
+    <div class="flex space-x-4">
+      <label class="inline-flex items-center">
+        <input
+          type="radio"
+          [checked]="!isRangeSelected()"
+          (change)="onDateTypeChange(false)"
+          class="text-blue-600 focus:ring-blue-500">
+        <span class="ml-2">Fecha Específica</span>
+      </label>
+      <label class="inline-flex items-center">
+        <input
+          type="radio"
+          [checked]="isRangeSelected()"
+          (change)="onDateTypeChange(true)"
+          class="text-blue-600 focus:ring-blue-500">
+        <span class="ml-2">Rango de Fechas</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Fecha Específica -->
+  <div *ngIf="!isRangeSelected()">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+    <input
+      type="date"
+      [value]="filters().specificDate ? (filters().specificDate | date:'yyyy-MM-dd') : ''"
+      (change)="onSpecificDateChange($event)"
+      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+  </div>
+
+  <!-- Rango de Fechas -->
+  <div *ngIf="isRangeSelected()" class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Desde</label>
+      <input
+        type="date"
+        [value]="filters().startDate ? (filters().startDate | date:'yyyy-MM-dd') : ''"
+        (change)="onStartDateChange($event)"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Hasta</label>
+      <input
+        type="date"
+        [value]="filters().endDate ? (filters().endDate | date:'yyyy-MM-dd') : ''"
+        (change)="onEndDateChange($event)"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+    </div>
+  </div>
+
+  <!-- Filtros Adicionales -->
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Período de Comida</label>
+      <select
+        [value]="filters().mealPeriodId"
+        (change)="onMealPeriodChange($event)"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <option [value]="null">Todos los períodos</option>
+        <option *ngFor="let period of mealPeriods()" [value]="period.id">
+          {{ period.nameMealPeriod }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Menú Específico</label>
+      <select
+        [value]="filters().menuId"
+        (change)="onMenuChange($event)"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <option [value]="null">Todos los menús</option>
+        <option *ngFor="let menu of menus()" [value]="menu.id">
+          {{ menu.dish.name }} - {{ menu.mealPeriod.nameMealPeriod }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Botones de Acción -->
+  <div class="flex justify-between pt-4 border-t border-gray-200">
+    <button
+      (click)="clearFilters()"
+      class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+      Limpiar Filtros
+    </button>
+    <button
+      (click)="onFilterChange()"
+      class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+      Aplicar Filtros
+    </button>
+  </div>
+</div>
