@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'dish-meal-period-management', component: DishMealPeriodManagementComponent },
   { path: 'menu-management', component: MenuManagementComponent },
+  //{ path: 'sale-management', component: SaleManagementComponent },
   { path: '**', redirectTo: '' }
 ];
 

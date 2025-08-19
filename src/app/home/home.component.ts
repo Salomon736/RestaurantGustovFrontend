@@ -14,4 +14,7 @@ export class HomeComponent {
   navigateToMenuManagement() {
     this.router.navigate(['/menu-management']);
   }
+  navigateToSaleManagement() {
+    this.router.navigate(['/sale-management']);
+  }
 }
