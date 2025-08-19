@@ -8,6 +8,8 @@ import { MenuInterface } from '../../models/menu/menu.interface';
 import { ReportFilter } from '../../models/report/report-filter.interface';
 import { DateUtils } from '../../utils/report/date.utils';
 import { SalesByMenu, SalesReport } from '../../models/report/sales-report.interface';
+import { MealPeriodService } from '../meal-period/meal-period.service';
+import { MealPeriodInterface } from '../../models/meal-period/meal-period.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,22 @@ import { SalesByMenu, SalesReport } from '../../models/report/sales-report.inter
 export class ReportService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiRestaurant}/sale`;
+  private readonly mealPeriodService = inject(MealPeriodService);
+  private mealPeriods: MealPeriodInterface[] = [];
+  constructor() {
+    this.loadMealPeriods();
+  }
+
+  private loadMealPeriods(): void {
+    this.mealPeriodService.searchByFilter$().subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.mealPeriods = response.data || [];
+        }
+      },
+      error: (error) => console.error('Error loading meal periods:', error)
+    });
+  }
 
   //#region Métodos Base para Endpoints API
 
@@ -46,17 +64,6 @@ export class ReportService {
     );
   }
 
-  getSalesByMenu$(menuId: number): Observable<SaleInterface[]> {
-    return this.http.get<ApiResponseInterface<SaleInterface[]>>(
-      `${this.baseUrl}/menu/${menuId}`
-    ).pipe(
-      map(response => response.data || []),
-      catchError(error => {
-        console.error('Error fetching sales by menu:', error);
-        return of([]);
-      })
-    );
-  }
 
   getTotalSalesByDate$(date: Date): Observable<number> {
     return this.http.get<ApiResponseInterface<number>>(
@@ -146,27 +153,60 @@ export class ReportService {
   //#region Métodos Privados de Utilidad
 
   private getFilteredSales$(filters: ReportFilter): Observable<SaleInterface[]> {
+    if (filters.mealPeriodId) {
+      return this.getSalesByMealPeriod$(filters.mealPeriodId, filters.startDate || undefined, filters.endDate || undefined);
+    }
     if (filters.specificDate) {
       return this.getSalesByDate$(filters.specificDate);
-    } else if (filters.startDate && filters.endDate) {
-      return this.getSalesByDateRange$(filters.startDate, filters.endDate);
-    } else if (filters.menuId) {
-      return this.getSalesByMenu$(filters.menuId);
-    } else {
-      const { start, end } = DateUtils.getCurrentMonth();
-      return this.getSalesByDateRange$(start, end);
     }
+    if (filters.startDate && filters.endDate) {
+      return this.getSalesByDateRange$(filters.startDate, filters.endDate);
+    }
+    const { start, end } = DateUtils.getCurrentMonth();
+    return this.getSalesByDateRange$(start, end);
   }
 
   private getReportPeriodLabel(filters: ReportFilter): string {
+    if (filters.mealPeriodId && filters.startDate && filters.endDate) {
+      const period = this.mealPeriods.find(p => p.id === filters.mealPeriodId);
+      const periodName = period ? period.nameMealPeriod : 'Período';
+      return `${periodName} (${DateUtils.getDateRangeLabel(filters.startDate, filters.endDate)})`;
+    }
+
+    if (filters.mealPeriodId) {
+      const period = this.mealPeriods.find(p => p.id === filters.mealPeriodId);
+      return period ? period.nameMealPeriod : 'Período Específico';
+    }
+
     if (filters.specificDate) {
       return DateUtils.getDateRangeLabel(filters.specificDate, filters.specificDate);
-    } else if (filters.startDate && filters.endDate) {
-      return DateUtils.getDateRangeLabel(filters.startDate, filters.endDate);
-    } else {
-      const { start, end } = DateUtils.getCurrentMonth();
-      return DateUtils.getDateRangeLabel(start, end);
     }
+
+    if (filters.startDate && filters.endDate) {
+      return DateUtils.getDateRangeLabel(filters.startDate, filters.endDate);
+    }
+
+    const { start, end } = DateUtils.getCurrentMonth();
+    return DateUtils.getDateRangeLabel(start, end);
+  }
+  getSalesByMealPeriod$(idMealPeriod: number, startDate?: Date, endDate?: Date): Observable<SaleInterface[]> {
+    let url = `${this.baseUrl}/meal-period/${idMealPeriod}`;
+
+    if (startDate && endDate) {
+      url += `?startDate=${DateUtils.formatDateForApi(startDate)}&endDate=${DateUtils.formatDateForApi(endDate)}`;
+    } else if (startDate) {
+      url += `?startDate=${DateUtils.formatDateForApi(startDate)}`;
+    } else if (endDate) {
+      url += `?endDate=${DateUtils.formatDateForApi(endDate)}`;
+    }
+
+    return this.http.get<ApiResponseInterface<SaleInterface[]>>(url).pipe(
+      map(response => response.data || []),
+      catchError(error => {
+        console.error('Error fetching sales by meal period:', error);
+        return of([]);
+      })
+    );
   }
 
   //#endregion

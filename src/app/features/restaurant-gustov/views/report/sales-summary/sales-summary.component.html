@@ -1,7 +1,7 @@
 <div class="bg-white rounded-lg border border-gray-200 p-6">
   <!-- Header -->
   <div class="flex justify-between items-center mb-6">
-    <h3 class="text-xl font-semibold text-gray-800">{{ title() }}</h3>
+    <h3 class="text-xl font-semibold text-gray-800">{{ title }}</h3>
     <div class="flex space-x-2">
       <button
         (click)="exportToCSV()"
@@ -16,18 +16,18 @@
     </div>
   </div>
 
-  <div *ngIf="loading()" class="text-center py-8">
+  <div *ngIf="loading" class="text-center py-8">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
     <p class="text-gray-500 mt-2">Cargando resumen...</p>
   </div>
 
-  <div *ngIf="!loading() && salesByMenu().length === 0" class="text-center py-8">
+  <div *ngIf="!loading && salesByMenu.length === 0" class="text-center py-8">
     <div class="text-gray-400 text-6xl mb-4">📦</div>
     <p class="text-gray-500">No hay datos para mostrar</p>
     <p class="text-sm text-gray-400">No se encontraron ventas para los filtros seleccionados</p>
   </div>
 
-  <div *ngIf="!loading() && salesByMenu().length > 0" class="space-y-6">
+  <div *ngIf="!loading && salesByMenu.length > 0" class="space-y-6">
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -39,7 +39,7 @@
         <div class="text-sm text-green-800">Productos Vendidos</div>
       </div>
       <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
-        <div class="text-2xl font-bold text-purple-600">{{ salesByMenu().length }}</div>
+        <div class="text-2xl font-bold text-purple-600">{{ salesByMenu.length }}</div>
         <div class="text-sm text-purple-800">Productos Diferentes</div>
       </div>
     </div>
@@ -56,7 +56,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let item of salesByMenu()" class="hover:bg-gray-50">
+          <tr *ngFor="let item of salesByMenu" class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
                 <img [src]="item.menu.dish.image || 'assets/images/default-dish.jpg'"
@@ -94,7 +94,7 @@
 
     <!-- Summary -->
     <div class="text-sm text-gray-500">
-      Mostrando {{ salesByMenu().length }} productos con ventas registradas
+      Mostrando {{ salesByMenu.length }} productos con ventas registradas
     </div>
   </div>
 </div>

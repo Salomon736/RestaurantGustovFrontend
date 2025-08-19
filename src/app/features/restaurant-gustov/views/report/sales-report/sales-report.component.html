@@ -1,7 +1,7 @@
 <div class="bg-white rounded-lg border border-gray-200 p-6">
   <!-- Header -->
   <div class="flex justify-between items-center mb-6">
-    <h3 class="text-xl font-semibold text-gray-800">{{ title() }}</h3>
+    <h3 class="text-xl font-semibold text-gray-800">{{ title }}</h3>
     <div class="flex space-x-2">
       <button
         (click)="exportToCSV()"
@@ -21,21 +21,19 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading()" class="text-center py-8">
+  <div *ngIf="loading" class="text-center py-8">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
     <p class="text-gray-500 mt-2">Cargando reporte...</p>
   </div>
 
-  <!-- Empty State -->
-  <div *ngIf="!loading() && sales().length === 0" class="text-center py-8">
+  <div *ngIf="!loading && sales.length === 0" class="text-center py-8">
     <div class="text-gray-400 text-6xl mb-4">📊</div>
     <p class="text-gray-500">No hay datos para mostrar</p>
     <p class="text-sm text-gray-400">Ajusta los filtros o intenta con otro rango de fechas</p>
   </div>
 
-  <!-- Sales Table -->
-  <div *ngIf="!loading() && sales().length > 0" class="overflow-x-auto">
+  <!-- Sales Tabla -->
+  <div *ngIf="!loading && sales.length > 0" class="overflow-x-auto">
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -65,7 +63,7 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let sale of sales()" class="hover:bg-gray-50">
+        <tr *ngFor="let sale of sales" class="hover:bg-gray-50">
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="text-sm text-gray-900">{{ sale.createdAt | date:'dd/MM/yyyy' }}</div>
             <div class="text-sm text-gray-500">{{ sale.createdAt | date:'HH:mm:ss' }}</div>
@@ -109,7 +107,7 @@
 
     <!-- Summary -->
     <div class="mt-4 text-sm text-gray-500">
-      Mostrando {{ sales().length }} ventas registradas
+      Mostrando {{ sales.length }} ventas registradas
     </div>
   </div>
 </div>

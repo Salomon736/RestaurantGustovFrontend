@@ -12,28 +12,28 @@ import { ExportService } from '../../../service/report/export.service';
 export class SalesSummaryComponent {
   private readonly exportService = inject(ExportService);
 
-  @Input() salesByMenu = signal<SalesByMenu[]>([]);
-  @Input() title = signal<string>('Resumen por Producto');
-  @Input() loading = signal<boolean>(false);
+  @Input() salesByMenu: SalesByMenu[] = [];
+  @Input() title: string = 'Resumen por Producto';
+  @Input() loading: boolean = false;
 
   get totalRevenue(): number {
-    return this.salesByMenu().reduce((sum, item) => sum + item.totalRevenue, 0);
+    return this.salesByMenu.reduce((sum, item) => sum + item.totalRevenue, 0);
   }
 
   get totalItemsSold(): number {
-    return this.salesByMenu().reduce((sum, item) => sum + item.totalSold, 0);
+    return this.salesByMenu.reduce((sum, item) => sum + item.totalSold, 0);
   }
 
   exportToCSV(): void {
     this.exportService.exportSalesByMenuToCSV(
-      this.salesByMenu(),
+      this.salesByMenu,
       `resumen-productos-${new Date().toISOString().split('T')[0]}.csv`
     );
   }
 
   exportToJSON(): void {
     this.exportService.exportToJSON(
-      this.salesByMenu(),
+      this.salesByMenu,
       `resumen-productos-${new Date().toISOString().split('T')[0]}.json`
     );
   }
