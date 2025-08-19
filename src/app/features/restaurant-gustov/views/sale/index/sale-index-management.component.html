@@ -1,0 +1,180 @@
+<div class="min-h-screen bg-gray-50">
+  <header class="border-b border-gray-200 bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-gray-900">Registro de Ventas</h1>
+        <button
+          class="text-gray-600 hover:text-gray-900 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors"
+          (click)="goBack()">
+          ← Volver
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <!-- Controles de Fecha -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
+      <div class="grid grid-cols-1 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Venta</label>
+          <input
+            type="date"
+            [value]="selectedDate()"
+            (change)="onDateChange($event)"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de Nueva Venta -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Nueva Venta</h2>
+
+      <!-- Tarjetas de Menús Disponibles -->
+      <div class="mb-6">
+        <h3 class="text-md font-medium text-gray-700 mb-3">Menús Disponibles</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            *ngFor="let menu of filteredMenus()"
+            (click)="selectMenu(menu)"
+            [class]="selectedMenu() === menu.id
+              ? 'border-2 border-cyan-500 bg-cyan-50'
+              : 'border border-gray-200 hover:border-cyan-300 hover:bg-cyan-50'"
+            class="p-4 rounded-lg cursor-pointer transition-all">
+            <div class="flex items-start space-x-3">
+              <img [src]="menu.dish.image || 'assets/images/default-dish.jpg'"
+                   [alt]="menu.dish.name"
+                   class="w-16 h-16 rounded-lg object-cover">
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-900">{{ menu.dish.name }}</h4>
+                <p class="text-sm text-gray-600">{{ menu.dish.description }}</p>
+                <div class="mt-2 flex justify-between items-center">
+                  <span class="text-cyan-700 font-semibold">{{ menu.dish.price | currency:'Bs ' }}</span>
+                  <span class="text-sm px-2 py-1 bg-gray-100 rounded-full">
+                    Disponible: {{ menu.quantity }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="filteredMenus().length === 0" class="text-center py-4 text-gray-500">
+          No hay menús disponibles para esta fecha
+        </div>
+      </div>
+
+      <!-- Detalles de la Venta -->
+      <div *ngIf="selectedMenu()" class="bg-gray-50 rounded-lg p-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Menú Seleccionado -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Menú seleccionado</label>
+            <div class="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200">
+              <img [src]="getSelectedMenu()?.dish?.image || 'assets/images/default-dish.jpg'"
+                   class="w-10 h-10 rounded-full object-cover">
+              <span class="font-medium">{{ getSelectedMenu()?.dish?.name }}</span>
+            </div>
+          </div>
+
+          <!-- Cantidad -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad</label>
+            <div class="flex items-center space-x-2">
+              <button
+                (click)="decreaseQuantity()"
+                [disabled]="quantity() <= 1"
+                class="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">
+                -
+              </button>
+              <input
+                type="number"
+                min="1"
+                [max]="getSelectedMenuQuantity()"
+                [value]="quantity()"
+                (change)="onQuantityChange($any($event.target).value)"
+                class="w-16 px-3 py-2 border border-gray-300 rounded-lg text-center">
+              <button
+                (click)="increaseQuantity()"
+                [disabled]="quantity() >= getSelectedMenuQuantity()"
+                class="px-3 py-1 bg-gray-200 rounded-lg disabled:opacity-50">
+                +
+              </button>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">
+              Máximo: {{ getSelectedMenuQuantity() }}
+            </div>
+          </div>
+
+          <!-- Precio Total -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Total</label>
+            <div class="p-3 bg-white rounded-lg border border-gray-200">
+              <div class="text-xl font-semibold text-cyan-600">
+                {{ (getSelectedMenuPrice() * quantity()) | currency:'Bs ' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button
+          (click)="registerSale()"
+          [disabled]="!selectedMenu()"
+          class="px-6 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+          </svg>
+          <span>Registrar Venta</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de Ventas del día -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">Ventas del Día</h2>
+        <div class="text-lg font-semibold text-cyan-600">
+          Total: {{ getTotalSalesForDay() | currency:'Bs ' }}
+        </div>
+      </div>
+
+      <div *ngIf="getSalesForSelectedDate().length === 0" class="text-center py-8 text-gray-500">
+        No hay ventas registradas para esta fecha
+      </div>
+
+      <div *ngIf="getSalesForSelectedDate().length > 0" class="space-y-3">
+        <div *ngFor="let sale of getSalesForSelectedDate()"
+             class="border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+          <div class="p-4">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-3">
+                <img [src]="sale.menu.dish.image || 'assets/images/default-dish.jpg'"
+                     class="w-12 h-12 rounded-lg object-cover">
+                <div>
+                  <h3 class="font-medium">{{ sale.menu.dish.name }}</h3>
+                  <p class="text-sm text-gray-500">{{ sale.createdAt | date:'MMM d, HH:mm' }}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-semibold text-cyan-600">{{ sale.totalPrice | currency:'Bs ' }}</div>
+                <div class="text-sm text-gray-500">{{ sale.quantitySold }} × {{ sale.menu.dish.price | currency:'Bs ' }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="border-t border-gray-100 px-4 py-2 bg-gray-50 flex justify-end">
+            <button
+              (click)="deleteSale(sale.id)"
+              class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center space-x-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Eliminar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

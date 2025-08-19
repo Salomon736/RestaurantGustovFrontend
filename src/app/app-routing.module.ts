@@ -3,12 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { DishMealPeriodManagementComponent } from './features/restaurant-gustov/views/dish-and-meal-period/index/dish-mealperiod-management.component';
 import { HomeComponent } from './home/home.component';
 import { MenuManagementComponent } from './features/restaurant-gustov/views/menu/index/menu-index.component';
+import { SaleManagementComponent } from './features/restaurant-gustov/views/sale/index/sale-index-management.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'dish-meal-period-management', component: DishMealPeriodManagementComponent },
   { path: 'menu-management', component: MenuManagementComponent },
-  //{ path: 'sale-management', component: SaleManagementComponent },
+  { path: 'sale-management', component: SaleManagementComponent },
   { path: '**', redirectTo: '' }
 ];
 
