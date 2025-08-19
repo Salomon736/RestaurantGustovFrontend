@@ -1,0 +1,100 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4 max-w-7xl">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Reportes de Ventas</h1>
+          <p class="text-gray-600 mt-2">Analiza el desempeño de tus ventas con reportes detallados</p>
+        </div>
+        <div class="bg-blue-100 px-4 py-2 rounded-lg">
+          <div class="text-sm text-blue-800 font-medium">Vista actual:</div>
+          <div class="text-lg font-bold text-blue-900">{{ getActiveReportType() }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Sidebar - Filtros -->
+      <div class="lg:col-span-1">
+        <app-report-filters
+          (filtersChange)="onFiltersChange($event)">
+        </app-report-filters>
+
+        <!-- Resumen Rápido -->
+        <div *ngIf="!loading() && (salesData().length > 0 || salesByMenuData().length > 0)"
+             class="bg-white rounded-lg border border-gray-200 p-6 mt-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumen</h3>
+
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Ingresos Totales:</span>
+              <span class="text-sm font-semibold text-green-600">{{ totalRevenue() | currency:'Bs ' }}</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Items Vendidos:</span>
+              <span class="text-sm font-semibold text-blue-600">{{ totalItemsSold() }}</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Registros:</span>
+              <span class="text-sm font-semibold text-purple-600">
+                {{ currentView() === 'detailed' ? salesData().length : salesByMenuData().length }}
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-gray-200">
+            <button
+              (click)="exportCurrentView()"
+              class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm">
+              📋 Exportar Vista Actual
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenido Principal -->
+      <div class="lg:col-span-3">
+        <div *ngIf="currentView() === 'detailed'">
+          <app-sales-report
+            [sales]="salesData()"
+            [title]="getReportTitle()"
+            [loading]="loading()">
+          </app-sales-report>
+        </div>
+        <div *ngIf="currentView() === 'summary'">
+          <app-sales-summary
+            [salesByMenu]="salesByMenuData()"
+            [title]="getReportTitle()"
+            [loading]="loading()">
+          </app-sales-summary>
+        </div>
+
+        <!-- Vista de Análisis -->
+        <div *ngIf="currentView() === 'analytical'">
+          <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="text-center py-12">
+              <div class="text-6xl text-gray-300 mb-4">📈</div>
+              <h3 class="text-xl font-semibold text-gray-700 mb-2">Módulo de Análisis</h3>
+              <p class="text-gray-500 mb-4">Próximamente: Gráficos y análisis avanzados</p>
+              <p class="text-sm text-gray-400">
+                Por ahora, puedes usar los reportes detallados y de resumen para analizar tus ventas.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado de Carga -->
+        <div *ngIf="loading()" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p class="text-gray-700">Generando reporte...</p>
+            <p class="text-sm text-gray-500">Esto puede tomar unos segundos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
