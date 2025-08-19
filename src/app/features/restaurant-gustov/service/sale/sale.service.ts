@@ -34,6 +34,19 @@ export class SaleService {
   getById$(saleId: number) {
     return this.http.get<ApiResponseInterface<SaleInterface>>(`${this.#endPointBaseV1}/${saleId}`);
   }
+  getSalesByDate$(date: Date) {
+    const formattedDate = date.toISOString().split('T')[0];
+    return this.http.get<ApiResponseInterface<Array<SaleInterface>>>(
+      `${this.#endPointBaseV1}/date/${formattedDate}`
+    );
+  }
+
+  getTotalSalesByDate$(date: Date) {
+    const formattedDate = date.toISOString().split('T')[0];
+    return this.http.get<ApiResponseInterface<number>>(
+      `${this.#endPointBaseV1}/total/date/${formattedDate}`
+    );
+  }
   delete$(saleId: number, destroyRef: DestroyRef) {
     return this.http.delete<ApiResponseInterface<boolean>>(`${this.#endPointBaseV1}/${saleId}`)
       .pipe(takeUntilDestroyed(destroyRef));
