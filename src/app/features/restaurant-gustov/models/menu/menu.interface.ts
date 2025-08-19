@@ -9,5 +9,5 @@ export interface MenuInterface {
   idMealPeriod: number;
   idLounge: number;
   dish: DishInterface;
-  mealPeriods: MealPeriodInterface;
+  mealPeriod: MealPeriodInterface;
 }
